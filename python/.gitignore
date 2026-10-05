@@ -1,0 +1,13 @@
+# Logs written by examples, tests and benchmarks
+*.log
+# Python build and cache output
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Local scratch scripts (one holds a development token)
+test/local/
