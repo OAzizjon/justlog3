@@ -1,1 +1,1 @@
-from .core import Logger, BasicLogger, off_signal_handler, set_api_token
+from .core import Logger, BasicLogger, off_signal_handler, set_api_token, shutdown

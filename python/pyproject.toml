@@ -1,20 +1,34 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "justlog3"
-version = "1.1.0"
+version = "1.1.1"
 description = "The cheetah of logging"
 readme = "README.md"
 requires-python = ">=3.8"
 # Cloud sending (set_api_token) uses httpx; it was imported but never declared.
 dependencies = ["httpx>=0.23"]
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 keywords = ["logging", "logger", "thread-safe", "concurrency"]
 authors = [
     { name = "Obd. Azizjon", email = "obdazizjon@gmail.com"}
 ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: System :: Logging",
+]
 
 [project.urls]
 Homepage = "https://github.com/OAzizjon/justlog3"
+Documentation = "https://github.com/OAzizjon/justlog3/tree/main/python#readme"
+Source = "https://github.com/OAzizjon/justlog3/tree/main/python"
+Issues = "https://github.com/OAzizjon/justlog3/issues"
+Changelog = "https://github.com/OAzizjon/justlog3/blob/main/python/CHANGELOG.md"
+"Cloud dashboard" = "https://jl3-cloud.site"

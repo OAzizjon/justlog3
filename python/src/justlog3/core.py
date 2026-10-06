@@ -78,6 +78,8 @@ class _CloudSender:
         self._seq_lock = threading.Lock()
         self._wake_event = threading.Event()
         self._stop = threading.Event()
+        # One drain at a time: the worker's and the final one in shutdown().
+        self._drain_lock = threading.Lock()
         # Sending waits until this time.monotonic(): Retry-After of a 429 or a backoff.
         self._paused_until = 0.0
         self._pause_is_backoff = False
@@ -91,17 +93,30 @@ class _CloudSender:
             self._wake_event.set()
 
     def shutdown(self):
+        # justlog3.shutdown() and the atexit hook may both get here.
+        if self._stop.is_set():
+            return
         self._stop.set()
         self._wake_event.set()
+        # The worker gives up its backlog between batches once _stop is set,
+        # so this waits for one request at most.
         self._thread.join(self.timeout + 1)
         # One last try even during a network backoff; a 429 pause is kept,
         # the server would only refuse again.
         if self._pause_is_backoff:
             self._paused_until = 0.0
+        # A worker still stuck in a slow request owns the client and the next
+        # batch: draining next to it would send the same lines twice and close
+        # the client under it.
+        if not self._drain_lock.acquire(timeout=self.timeout * 2):
+            _cloud_err("Cloud shutdown: a send is still in progress, unsent lines stay in the log file")
+            return
         try:
             self._drain(deadline=_time.monotonic() + self.timeout * 2)
         except Exception as e:
             _cloud_err(f"Cloud shutdown drain error: {e}")
+        finally:
+            self._drain_lock.release()
         self._client.close()
 
     def _next_seq(self) -> int:
@@ -115,7 +130,8 @@ class _CloudSender:
             self._wake_event.clear()
             if not self.disabled:
                 try:
-                    self._drain()
+                    with self._drain_lock:
+                        self._drain()
                 except Exception as e:
                     _cloud_err(f"Cloud worker error: {e}")
             if self._stop.is_set():
@@ -137,6 +153,8 @@ class _CloudSender:
         while not self.disabled and _time.monotonic() >= self._paused_until:
             if deadline is not None and _time.monotonic() > deadline:
                 return
+            if self._stop.is_set() and threading.current_thread() is self._thread:
+                return  # shutdown() takes over the rest
             with logger.lock:
                 if not logger._cloud_buf:
                     return
@@ -408,10 +426,10 @@ def off_signal_handler():
     with _install_lock:
         global _signal_handling_enabled
         if _signal_installed:
-                print(f"[JustLog3Error] WARNING! The SIGTERM handler is ALREADY installed — calling disable_signal_handling() now has no effect. Call it right after import, before creating any loggers, on the very next line!", flush=True)
+                print("[JustLog3Error] WARNING! The SIGTERM handler is ALREADY installed — calling off_signal_handler() now has no effect. Call it right after import, before creating any loggers.", flush=True)
                 return
         _signal_handling_enabled = False
-        print(f"[JustLog3] SIGTERM interception disabled. Call justlog.shutdown() or flush() on each logger manually before the process exits.")
+        print("[JustLog3] SIGTERM interception disabled. Call justlog3.shutdown() before the process exits: it flushes every logger and sends what is left to the cloud.")
 
 def _install_signal_handler():
     with _install_lock:

@@ -2,6 +2,21 @@
 
 All changes in this project are documented in this file.
 
+## [1.1.1] - 2026-10-06
+
+### Added
+- `justlog3.shutdown()` is exported: it flushes every logger and sends what is left to
+  the cloud. Calling it more than once (for example, yourself and then the exit hook)
+  is safe.
+
+### Fixed
+- Shutdown during a slow network no longer races the background sender: the two could
+  send the same lines twice and close the HTTP client while it was still in use. Sends
+  now run one at a time, and the background sender hands over at the next batch.
+- The `off_signal_handler()` messages named functions that don't exist
+  (`disable_signal_handling()`, `justlog.shutdown()`).
+- PyPI metadata: classifiers and links to the source, docs, issues and changelog.
+
 ## [1.1.0] - 2026-10-04
 
 ### Changed

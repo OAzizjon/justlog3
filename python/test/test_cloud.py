@@ -23,6 +23,7 @@ class FakeServer:
     def __init__(self):
         self.requests = []
         self.script = []
+        self.delay = 0.0  # seconds before every answer: a slow network
         server = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -38,6 +39,7 @@ class FakeServer:
                     'lines': body.decode('utf-8').split('\n'),
                 })
                 answer = server.script.pop(0) if server.script else (202, {})
+                time.sleep(server.delay)
                 if answer == 'drop':
                     # The request arrived, the answer never does (lost response).
                     self.close_connection = True
@@ -173,6 +175,39 @@ class CloudSendingTestCase(unittest.TestCase):
         self.drain()
 
         self.assertNotIn('Content-Encoding', self.server.requests[0]['headers'])
+
+    def test_shutdown_twice_is_safe(self):
+        # justlog3.shutdown() by hand, then the atexit hook.
+        self.write(3)
+        errors = []
+        original = core._cloud_err
+        core._cloud_err = errors.append
+        try:
+            justlog3.shutdown()
+            justlog3.shutdown()
+        finally:
+            core._cloud_err = original
+
+        self.assertEqual(errors, [])
+        self.assertEqual([len(request['lines']) for request in self.server.requests], [3])
+
+    def test_shutdown_during_a_slow_send_sends_every_line_once(self):
+        # The worker's backlog takes longer than shutdown waits for it: before
+        # 1.1.1 both drained at once and sent the same batches twice.
+        self.server.delay = 0.3
+        self.cloud.timeout = 2  # shutdown waits timeout + 1 s for the worker, then drains for 2 x timeout
+        self.logger._cloud_batch_lines = 2
+        self.write(24)  # 12 batches: 3.6 s of sending, longer than shutdown waits
+
+        self.cloud.wake()
+        time.sleep(0.1)  # the worker is inside its first request
+        justlog3.shutdown()
+
+        lines = [line for request in self.server.requests for line in request['lines']]
+        self.assertEqual(sorted(lines), sorted(set(lines)))
+        self.assertEqual(len(lines), 24)
+        seqs = [request['headers']['X-JustLog-Seq'] for request in self.server.requests]
+        self.assertEqual(len(seqs), len(set(seqs)))
 
 
 if __name__ == '__main__':

@@ -149,8 +149,10 @@ Same parameters as `Logger`, plus `console_level`. Methods: `debug`, `info`, `su
 
 ### Functions
 
-- `set_api_token(token, *, url, flush_interval=5.0, timeout=5.0)` turns on cloud sending.
-  Raises `ValueError` for an empty token.
+- `set_api_token(token, *, url=..., flush_interval=5.0, timeout=5.0)` turns on cloud
+  sending. `url` defaults to JustLog3 Cloud. Raises `ValueError` for an empty token.
+- `shutdown()` flushes every logger and sends what is left to the cloud. It runs on exit by
+  itself; call it yourself after `off_signal_handler()` or before `os._exit()`.
 - `off_signal_handler()` keeps JustLog3 from installing its SIGTERM handler. Call it before
   creating the first logger.
 
