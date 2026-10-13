@@ -1,5 +1,10 @@
 # JustLog3
 
+[![CI](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml/badge.svg)](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/justlog3.svg)](https://pypi.org/project/justlog3/)
+[![Go Reference](https://pkg.go.dev/badge/github.com/OAzizjon/justlog3/go.svg)](https://pkg.go.dev/github.com/OAzizjon/justlog3/go)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 **The cheetah of logging.** Minimalistic, fast, zero-config loggers for Python and Go.
 
 ## Introduction
@@ -35,6 +40,17 @@ stored twice.
 
 Setup, caveats and how to reproduce: [python/BENCHMARKS.md](python/BENCHMARKS.md),
 [go/BENCHMARKS.md](go/BENCHMARKS.md).
+
+## Contributing
+
+Bug reports, ideas and pull requests are welcome. Small, well-scoped tasks are labelled
+[good first issue](https://github.com/OAzizjon/justlog3/labels/good%20first%20issue); questions
+and show-and-tell go to [Discussions](https://github.com/OAzizjon/justlog3/discussions).
+
+Tests: `go test ./...` in `go/`, `python test/test_cloud.py` in `python/` (needs `httpx`). CI runs
+both on Linux, Windows and macOS.
+
+If JustLog3 saves you time, a star helps other developers find it.
 
 ## License
 

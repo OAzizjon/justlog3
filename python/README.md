@@ -1,5 +1,6 @@
 # JustLog3
 
+[![CI](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml/badge.svg)](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/justlog3.svg)](https://pypi.org/project/justlog3/)
 [![Python](https://img.shields.io/pypi/pyversions/justlog3.svg)](https://pypi.org/project/justlog3/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)

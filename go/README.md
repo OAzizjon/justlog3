@@ -1,5 +1,6 @@
 # JustLog3 for Go
 
+[![CI](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml/badge.svg)](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/OAzizjon/justlog3/go.svg)](https://pkg.go.dev/github.com/OAzizjon/justlog3/go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/OAzizjon/justlog3/go)](https://goreportcard.com/report/github.com/OAzizjon/justlog3/go)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
