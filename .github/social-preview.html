@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+:root { --bg:#0b1118; --text:#eef5f4; --muted:#8da2ad; --teal:#55d6bd; --blue:#75b8ff; --line:rgba(169,193,211,.16); }
+* { box-sizing:border-box; margin:0; }
+body { width:1280px; height:640px; background:
+  radial-gradient(900px 500px at 85% 0%, rgba(85,214,189,.16), transparent 60%),
+  radial-gradient(700px 420px at 0% 100%, rgba(117,184,255,.12), transparent 60%), var(--bg);
+  color:var(--text); font-family:"Segoe UI", system-ui, sans-serif; padding:72px 84px; position:relative; }
+.mark { display:inline-grid; place-items:center; width:64px; height:64px; border:2px solid var(--teal); color:var(--teal);
+  font:600 34px Consolas, monospace; border-radius:8px; }
+.brand { display:flex; align-items:center; gap:22px; }
+.brand h1 { font-size:64px; letter-spacing:.02em; font-weight:700; }
+.tag { margin-top:26px; font-size:44px; font-weight:600; }
+.tag span { color:var(--teal); }
+.sub { margin-top:14px; font-size:28px; color:var(--muted); }
+.stats { position:absolute; left:84px; right:84px; bottom:120px; display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.stat { border:1px solid var(--line); background:rgba(17,27,37,.72); border-radius:14px; padding:22px 26px; }
+.stat small { display:block; color:var(--muted); font:500 20px Consolas, monospace; letter-spacing:.08em; text-transform:uppercase; }
+.stat strong { display:block; margin-top:8px; font:600 38px Consolas, monospace; color:var(--text); }
+.stat em { font-style:normal; color:var(--teal); font-size:26px; font-family:"Segoe UI", sans-serif; font-weight:500; margin-left:10px; }
+.foot { position:absolute; left:84px; right:84px; bottom:52px; display:flex; justify-content:space-between; color:var(--muted); font:22px Consolas, monospace; }
+.foot b { color:var(--blue); font-weight:500; }
+</style></head><body>
+<div class="brand"><div class="mark">J</div><h1>JustLog3</h1></div>
+<p class="tag">The <span>cheetah</span> of logging.</p>
+<p class="sub">Minimalistic, fast, zero-config loggers for Python and Go.</p>
+<div class="stats">
+  <div class="stat"><small>Python · per call</small><strong>9.8 µs<em>~3× faster than logging</em></strong></div>
+  <div class="stat"><small>Go · per line</small><strong>60 ns<em>zero allocations</em></strong></div>
+</div>
+<div class="foot"><span>pip install justlog3 · go get github.com/OAzizjon/justlog3/go</span><b>MIT</b></div>
+</body></html>
