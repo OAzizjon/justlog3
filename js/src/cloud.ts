@@ -295,6 +295,9 @@ class CloudSender {
             } finally {
                 clearTimeout(limit);
                 this.stop();
+                // The abort settles the request within a tick; until then cloudHead
+                // is stale, and a next sender starting now would resend the batch.
+                await this.inFlight;
             }
         })();
         return this.shutdownPromise;
