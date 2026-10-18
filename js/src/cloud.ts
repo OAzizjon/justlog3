@@ -269,10 +269,13 @@ class CloudSender {
      * Token replacement: drain like shutdown(), but only the lines queued until
      * now. Settles after every earlier sender too: shutdown() alone gives up at
      * timeoutMs, and the next sender must not start while an older one still sends.
+     * The final wait is for the request shutdown() aborted: until it settles,
+     * cloudHead is stale and the next sender would resend that batch. It lives
+     * here, not in shutdown(), so `await shutdown()` stays bounded by timeoutMs.
      */
     handOver(): Promise<void> {
         this.handover ??= new Map(Array.from(loggers, logger => [logger, logger.cloudHead + logger.cloudLines.length]));
-        return Promise.all([this.shutdown(), this.previous]).then(() => undefined);
+        return Promise.all([this.shutdown(), this.previous]).then(() => this.inFlight);
     }
 
     shutdown(): Promise<void> {
@@ -295,9 +298,6 @@ class CloudSender {
             } finally {
                 clearTimeout(limit);
                 this.stop();
-                // The abort settles the request within a tick; until then cloudHead
-                // is stale, and a next sender starting now would resend the batch.
-                await this.inFlight;
             }
         })();
         return this.shutdownPromise;

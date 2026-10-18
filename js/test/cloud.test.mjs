@@ -465,3 +465,21 @@ test('rapid token replacements wait for every earlier sender', async () => {
         } finally { first?.end(); }
     }, { timeoutMs: 1000 });
 });
+
+test('shutdown() stays bounded by the newest timeout while an older sender still waits', async () => {
+    await fixture(async ({ logger, requests, url, handle }) => {
+        let first;
+        handle((_request, response, count) => {
+            if (count === 1) first = response;
+            else response.end();
+        });
+        try {
+            logger.log('stuck', { offConsole: true });
+            await until(() => requests.length === 1, 1500);
+            setApiToken('b', { url, flushIntervalMs: 20, timeoutMs: 20 });
+            const start = Date.now();
+            await shutdown();
+            assert.ok(Date.now() - start < 500, `shutdown took ${Date.now() - start} ms`);
+        } finally { first?.end(); }
+    }, { timeoutMs: 3000 });
+});
