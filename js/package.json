@@ -1,0 +1,36 @@
+{
+  "name": "justlog3",
+  "version": "1.0.0",
+  "description": "Buffered console, file and cloud logging for JavaScript and TypeScript",
+  "license": "MIT",
+  "keywords": ["logger", "logging", "log", "typescript", "cloud-logging", "justlog3"],
+  "homepage": "https://jl3-cloud.site/docs/javascript/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OAzizjon/justlog3.git",
+    "directory": "js"
+  },
+  "bugs": "https://github.com/OAzizjon/justlog3/issues",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "npm run build && node --test test/",
+    "prepublishOnly": "npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0"
+  }
+}

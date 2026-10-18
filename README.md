@@ -3,9 +3,11 @@
 [![CI](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml/badge.svg)](https://github.com/OAzizjon/justlog3/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/justlog3.svg)](https://pypi.org/project/justlog3/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/OAzizjon/justlog3/go.svg)](https://pkg.go.dev/github.com/OAzizjon/justlog3/go)
+[![npm](https://img.shields.io/npm/v/justlog3.svg)](https://www.npmjs.com/package/justlog3)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**The cheetah of logging.** Minimalistic, fast, zero-config loggers for Python and Go.
+**The cheetah of logging.** Minimalistic, fast, zero-config loggers for Python, Go and
+JavaScript/TypeScript.
 
 ## Introduction
 
@@ -24,8 +26,9 @@ stack traces.
 |---|---|---|
 | **Python** 3.8+ | `pip install justlog3` | [python/README.md](python/README.md) |
 | **Go** 1.23+ | `go get github.com/OAzizjon/justlog3/go` | [go/README.md](go/README.md) |
+| **Node.js** 18+, TypeScript | `npm install justlog3` | [js/README.md](js/README.md) |
 
-Both write the same line format, `PREFIX:2026-10-05 14:03:12.517 - message`, and speak the same
+All three write the same line format, `PREFIX:2026-10-05 14:03:12.517 - message`, and speak the same
 cloud protocol: batched, gzip-compressed, retried with the same sequence number so nothing is
 stored twice.
 
@@ -47,8 +50,8 @@ Bug reports, ideas and pull requests are welcome. Small, well-scoped tasks are l
 [good first issue](https://github.com/OAzizjon/justlog3/labels/good%20first%20issue); questions
 and show-and-tell go to [Discussions](https://github.com/OAzizjon/justlog3/discussions).
 
-Tests: `go test ./...` in `go/`, `python test/test_cloud.py` in `python/` (needs `httpx`). CI runs
-both on Linux, Windows and macOS.
+Tests: `go test ./...` in `go/`, `python test/test_cloud.py` in `python/` (needs `httpx`),
+`npm install && npm test` in `js/`. CI runs all three on Linux and Windows, and Go on macOS too.
 
 If JustLog3 saves you time, a star helps other developers find it.
 
