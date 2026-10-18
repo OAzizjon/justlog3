@@ -176,6 +176,16 @@ class CloudSendingTestCase(unittest.TestCase):
 
         self.assertNotIn('Content-Encoding', self.server.requests[0]['headers'])
 
+    def test_non_latin_logger_name_is_sent_as_utf8(self):
+        logger = justlog3.Logger('журнал', cloud_cycles=10 ** 9)
+        logger.log('line', off_console=True)
+        logger._buffer.clear()
+
+        self.drain()
+
+        header = self.server.requests[0]['headers']['X-JustLog-Logger']
+        self.assertEqual(header.encode('latin-1').decode('utf-8'), 'журнал.log')
+
     def test_shutdown_twice_is_safe(self):
         # justlog3.shutdown() by hand, then the atexit hook.
         self.write(3)

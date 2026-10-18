@@ -2,7 +2,7 @@
 
 All changes in this project are documented in this file.
 
-## [1.1.1] - 2026-10-06
+## [1.1.1] - 2026-10-18
 
 ### Added
 - `justlog3.shutdown()` is exported: it flushes every logger and sends what is left to
@@ -10,6 +10,9 @@ All changes in this project are documented in this file.
   is safe.
 
 ### Fixed
+- A logger whose file name has non-ASCII characters (`Logger('журнал')`) never reached
+  the cloud: httpx refused the header and every retry failed the same way. The name is
+  now sent as UTF-8, like the Go client does.
 - Shutdown during a slow network no longer races the background sender: the two could
   send the same lines twice and close the HTTP client while it was still in use. Sends
   now run one at a time, and the background sender hands over at the next batch.

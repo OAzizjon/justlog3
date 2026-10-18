@@ -180,7 +180,9 @@ class _CloudSender:
             'Content-Type': 'text/plain; charset=utf-8',
             'X-JustLog-Session': self.session_id,
             'X-JustLog-Seq': str(seq),
-            'X-JustLog-Logger': logger.filename,
+            # httpx encodes str headers as ASCII and raises on anything else
+            # (then every retry fails); send the UTF-8 bytes, as the Go client does.
+            'X-JustLog-Logger': logger.filename.encode('utf-8'),
             'X-JustLog-UTC-Offset': str(_time.localtime().tm_gmtoff) if logger.with_time else '',
         }
         if len(body) >= COMPRESS_FROM_BYTES:
