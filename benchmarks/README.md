@@ -80,9 +80,11 @@ node bench.mjs > results.md
 
 ## Read before quoting
 
-- **Timed to the end.** The final flush or close is inside the timed part, `fsync` is outside it
-  for every logger, and every run checks that all lines reached the file. Buffering can't hide
-  unwritten lines.
+- **Timed to the end.** The final flush or close is inside the timed part and `fsync` is outside
+  it. The scripts check after every run that all lines reached the file, so buffering can't hide
+  unwritten lines. The Go table above predates two fixes to its script (the line check, and no
+  fsync when buffered zap stops); a re-run with both kept the same order, see
+  [results/2026-10-19/README.md](results/2026-10-19/README.md).
 - **Formats differ.** justlog3 writes one plain line (`INFO:2026-10-19 10:12:01.517 - message`).
   zap, zerolog and pino build structured records; slog writes key=value. Python's three libraries
   use formats as close as they allow.
@@ -93,8 +95,9 @@ node bench.mjs > results.md
 - **"Console" means the null device.** stdout goes to `NUL` (`/dev/null` elsewhere). A real
   terminal is much slower for every library and would hide the difference.
 - **No `fsync`.** These are page-cache writes, not durability guarantees.
-- **Power matters.** A verified Go re-run on battery came out 3–4× slower for every logger, and
-  the parallel gap narrowed from 3.4× to about 2×: see
+- **Power matters.** A verified Go re-run on battery came out 3–4× slower single-threaded for
+  every logger. With 22 goroutines justlog3 slowed 3.4× and the others about 2×, so that gap
+  narrowed from 3.4× to about 2×: see
   [results/2026-10-19/README.md](results/2026-10-19/README.md).
 - **One laptop.** Absolute numbers move with power mode and background load. On 2026-10-05 the
   same laptop gave higher numbers for every library (Python file only: justlog3 9.8 µs, `logging`
