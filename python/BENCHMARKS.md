@@ -1,7 +1,7 @@
 # Benchmarks
 
-justlog3 1.1.0 compared with the standard `logging` module and loguru 0.7.3.
-Measured on 2026-10-05.
+justlog3 1.1.2 compared with the standard `logging` module and loguru 0.7.3.
+Measured on 2026-10-19. The script and raw output are in [../benchmarks/](../benchmarks/).
 
 ## Setup
 
@@ -23,16 +23,19 @@ Measured on 2026-10-05.
 
 | Scenario | justlog3 | logging | loguru |
 |---|---|---|---|
-| File only | **9.8** (9.0–11.3) | 27.9 (23.0–31.8) | 29.6 (23.7–32.2) |
-| File + console | **12.5** (11.0–13.5) | 35.3 (32.5–38.2) | 37.8 (36.0–41.2) |
-| File only, 8 threads | **11.8** (11.4–12.9) | 49.4 (47.4–49.9) | 50.4 (48.8–51.4) |
-| File + cloud | 13.5 (12.5–14.0) | – | – |
+| File only | **5.4** (5.3–5.6) | 16.2 (16.0–16.5) | 17.2 (17.0–17.5) |
+| File + console | **7.1** (6.7–16.1) | 22.9 (21.6–47.5) | 23.3 (22.2–47.0) |
+| File only, 8 threads | **6.9** (6.7–10.9) | 26.2 (24.6–32.2) | 26.5 (25.1–29.1) |
+| File + cloud | 7.3 (6.5–7.5) | – | – |
 
-- **File only:** justlog3 is about 2.8x faster. `logging` and loguru hand every record to the
+- **File only:** justlog3 is about 3x faster. `logging` and loguru hand every record to the
   file object, while justlog3 writes 50 lines at a time.
-- **8 threads:** the gap grows to about 4x.
-- **Cloud:** sending to the cloud adds about 3.7 µs per call. Lines go to the server from a
+- **8 threads:** the gap grows to about 3.8x.
+- **Cloud:** sending to the cloud adds about 1.9 µs per call. Lines go to the server from a
   background thread, compressed, in batches.
+- **Compared with 2026-10-05:** the same laptop then gave higher numbers for every library
+  (file only: justlog3 9.8 µs, `logging` 27.9 µs, loguru 29.6 µs). The ratios stayed close
+  (2.8x then, 3.0x now), so compare libraries within one run, not across days.
 
 ## 1.1.0 compared with 1.0.0
 
@@ -42,7 +45,7 @@ gzip, retries) don't slow down `log()`.
 
 ## Where the time goes
 
-A cProfile of 100,000 file-only calls:
+A cProfile of 100,000 file-only calls (1.1.0, 2026-10-05):
 
 - **57%** of the time is spent opening and closing the log file. Every disk write
   (every 50 lines) reopens it.
@@ -54,6 +57,13 @@ would be the biggest single speed-up, roughly 2x for file-only logging.
 
 ## Reproducing
 
-The benchmark script lives outside the package so that loguru is not a dependency. Each scenario
-times `log()` / `info()` in a loop on a fresh temporary file and includes the final flush.
+The script is [../benchmarks/python/bench.py](../benchmarks/python/bench.py), outside the package
+so that loguru is not a dependency. Each scenario times `log()` / `info()` in a loop on a fresh
+temporary file and includes the final flush.
+
+```sh
+cd benchmarks/python
+python -m pip install -r requirements.txt
+python bench.py
+```
 

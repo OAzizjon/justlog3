@@ -15,8 +15,8 @@ pip install justlog3
 
 Your logger should not be the slowest line in your program. And yet `logging` hands every single
 record to the file object, and loguru does the same with nicer colors. JustLog3 doesn't: it
-collects lines and writes them fifty at a time. A call costs **9.8 µs** where `logging` needs
-27.9 µs and loguru 29.6 µs. Put eight threads on it and the gap grows to **four times**.
+collects lines and writes them fifty at a time. A call costs **5.4 µs** where `logging` needs
+16.2 µs and loguru 17.2 µs. Put eight threads on it and the gap grows to **almost four times**.
 
 No handlers. No formatters. No `dictConfig` copied from a five-year-old answer. One line creates a
 logger, one line logs. One more line and every log line also lands in
@@ -159,19 +159,19 @@ Same parameters as `Logger`, plus `console_level`. Methods: `debug`, `info`, `su
 
 ## Benchmarks
 
-justlog3 1.1.0 against the standard `logging` module and loguru 0.7.3, writing the same message
+justlog3 1.1.2 against the standard `logging` module and loguru 0.7.3, writing the same message
 with a timestamp to a file. Median of 7 runs × 50,000 calls; the final flush is timed.
 
 | Scenario | justlog3 | logging | loguru |
 |---|---|---|---|
-| File only | **9.8 µs** | 27.9 µs | 29.6 µs |
-| File + console | **12.5 µs** | 35.3 µs | 37.8 µs |
-| File only, 8 threads | **11.8 µs** | 49.4 µs | 50.4 µs |
-| File + cloud | 13.5 µs | – | – |
+| File only | **5.4 µs** | 16.2 µs | 17.2 µs |
+| File + console | **7.1 µs** | 22.9 µs | 23.3 µs |
+| File only, 8 threads | **6.9 µs** | 26.2 µs | 26.5 µs |
+| File + cloud | 7.3 µs | – | – |
 
-Intel Core Ultra 7 155H, Windows 11, Python 3.14.6, measured 2026-10-05. The console was
+Intel Core Ultra 7 155H, Windows 11, Python 3.14.6, measured 2026-10-19. The console was
 redirected to the null device; a real terminal is slower for every library. Setup, ranges and
-caveats: [BENCHMARKS.md](BENCHMARKS.md).
+caveats: [BENCHMARKS.md](BENCHMARKS.md); the script: [benchmarks/python](https://github.com/OAzizjon/justlog3/tree/main/benchmarks/python).
 
 ## Requirements
 

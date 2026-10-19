@@ -1,7 +1,7 @@
 # Benchmarks
 
-justlog3 1.1.0 compared with `log/slog` (standard library), zap and zerolog.
-Measured on 2026-10-05.
+justlog3 compared with `log/slog` (standard library), zap and zerolog.
+Measured on 2026-10-19. The module and raw output are in [../benchmarks/](../benchmarks/).
 
 ## Setup
 
@@ -21,29 +21,33 @@ Measured on 2026-10-05.
   are usually set up.
 - **Buffered:** a 64 KB `bufio.Writer` is added (zap: `BufferedWriteSyncer`). For the parallel
   runs it is wrapped in a mutex, because `bufio.Writer` is not safe for concurrent use.
-- The final flush is inside the timed part. `go test -bench . -benchtime 2s -count 5`, medians
-  via `benchstat`.
+- The final flush is inside the timed part. `go test -bench . -benchtime 2s -count 6`, median
+  of the 6 runs.
 
 ## Results, time per call (lower is better)
 
 | Logger | ns/op | allocs/op |
 |---|---|---|
-| **justlog3** | **60** | **0** |
-| zerolog, buffered | 292 | 0 |
-| zap, buffered | 559 | 2 |
-| slog, buffered | 997 | 0 |
-| zerolog, default | 3,265 | 0 |
-| zap, default | 4,118 | 2 |
-| slog, default | 4,952 | 0 |
+| **justlog3** | **43** | **0** |
+| zerolog, buffered | 181 | 0 |
+| zap, buffered | 322 | 2 |
+| slog, buffered | 648 | 0 |
+| zerolog, default | 2,176 | 0 |
+| zap, default | 2,396 | 2 |
+| slog, default | 3,008 | 0 |
 
 Parallel, 22 goroutines:
 
 | Logger | ns/op |
 |---|---|
-| **justlog3** | **141** |
-| zerolog, buffered | 436 |
-| zap, buffered | 576 |
-| slog, buffered | 724 |
+| **justlog3** | **88** |
+| zerolog, buffered | 302 |
+| zap, buffered | 405 |
+| slog, buffered | 507 |
+
+On 2026-10-05 the same laptop gave higher numbers for every logger (justlog3 60 ns, zerolog 292,
+zap 559, slog 997); the order and the ratios stayed close. justlog3 shows 15–27 bytes per op
+with zero allocations: its buffer growing, spread over millions of calls.
 
 ### Read before quoting
 
@@ -77,5 +81,11 @@ up to ±50% on this laptop). Allocations stay at 0 per call.
 go test -run '^$' -bench . -benchtime 2s -count 6 ./...
 ```
 
-The comparison with slog, zap and zerolog lives in a separate module, so that this package stays
-free of dependencies. Each benchmark logs `b.N` lines to a fresh file and flushes at the end.
+The comparison with slog, zap and zerolog lives in a separate module,
+[../benchmarks/go](../benchmarks/go), so that this package stays free of dependencies. Each
+benchmark logs `b.N` lines to a fresh file and flushes at the end.
+
+```sh
+cd benchmarks/go
+go test -run '^$' -bench . -benchtime 2s -count 6 ./...
+```

@@ -191,6 +191,21 @@ On a normal exit a `beforeExit` hook flushes the files and sends what is waiting
 does not emit `beforeExit`, so `await shutdown()` yourself before a manual exit. `shutdown()`
 ends cloud sending for the process.
 
+## Benchmarks
+
+justlog3 against pino 9.6.0 and winston 3.17.0, every logger writing the same message with a
+timestamp to a file. 7 runs × 50,000 calls, a fresh process per run; the final flush and close
+are timed. Median microseconds per call, lower is better.
+
+| Scenario | justlog3 | pino (async) | pino (sync) | winston |
+|---|---|---|---|---|
+| File | **4.2** | 6.0 | 5.7 | 5.3 |
+| File + console | **6.2** | 7.0 | 6.6 | 6.4 |
+
+Intel Core Ultra 7 155H, Windows 11, Node 24.19.0, measured 2026-10-19. The console was the null
+device. pino writes structured JSON, justlog3 a plain line. Script, ranges and caveats:
+[benchmarks/](https://github.com/OAzizjon/justlog3/tree/main/benchmarks).
+
 ## Requirements
 
 Node.js 18 or newer. No runtime dependencies are required.

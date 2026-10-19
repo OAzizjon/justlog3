@@ -16,9 +16,9 @@ Requires Go 1.23 or newer. The package name is `justlog3`.
 ## Introduction
 
 zap and zerolog are brilliant at building structured records. Most of the time you just want a
-line in a file, and you want it now. JustLog3 writes one in **60 ns** with **zero
-allocations**. Buffered zerolog takes 292 ns, buffered zap 559 ns, `log/slog` 997 ns. With 22
-goroutines hammering it: **141 ns** against 436, 576 and 724.
+line in a file, and you want it now. JustLog3 writes one in **43 ns** with **zero
+allocations**. Buffered zerolog takes 181 ns, buffered zap 322 ns, `log/slog` 648 ns. With 22
+goroutines hammering it: **88 ns** against 302, 405 and 507.
 
 No encoder config, no sinks, no field builders, no dependencies outside the standard library.
 `NewLogger("app.log")` and you are logging. `SetAPIToken(...)` and every line also lands in
@@ -131,21 +131,21 @@ settings, `logger.StatusText()` the same as text.
 
 ## Benchmarks
 
-justlog3 1.1.0 against `log/slog`, zap and zerolog, every logger writing the same message with a
-timestamp to a file. `go test -bench . -benchtime 2s -count 5`, medians via `benchstat`; the
+justlog3 against `log/slog`, zap and zerolog, every logger writing the same message with a
+timestamp to a file. `go test -bench . -benchtime 2s -count 6`, median of the 6 runs; the
 final flush is timed.
 
 | Logger | ns/op | allocs/op |
 |---|---|---|
-| **justlog3** | **60** | **0** |
-| zerolog, buffered | 292 | 0 |
-| zap, buffered | 559 | 2 |
-| slog, buffered | 997 | 0 |
-| zerolog, default | 3,265 | 0 |
-| zap, default | 4,118 | 2 |
-| slog, default | 4,952 | 0 |
+| **justlog3** | **43** | **0** |
+| zerolog, buffered | 181 | 0 |
+| zap, buffered | 322 | 2 |
+| slog, buffered | 648 | 0 |
+| zerolog, default | 2,176 | 0 |
+| zap, default | 2,396 | 2 |
+| slog, default | 3,008 | 0 |
 
-22 goroutines: justlog3 **141 ns**, zerolog 436, zap 576, slog 724 (all buffered).
+22 goroutines: justlog3 **88 ns/op**, zerolog 302, zap 405, slog 507 (all buffered).
 
 Before quoting these numbers:
 
@@ -155,12 +155,14 @@ Before quoting these numbers:
 - "Default" means each call writes straight to the `*os.File`, which is how these libraries
   are usually set up. Most of that time is the write system call.
 
-Other scenarios from the package's own `bench_test.go`: no timestamp ~26 ns, file + console
-(stdout to NUL) ~390 ns, file + cloud ~185 ns. Console output costs a system call per line; a
+Other scenarios from the package's own `bench_test.go` (these leave the final flush out of the
+timer, so they are not comparable with the table): no timestamp ~26 ns, file + console (stdout to
+NUL) ~390 ns, file + cloud ~185 ns. Console output costs a system call per line; a
 real terminal is slower still.
 
-Intel Core Ultra 7 155H, Windows 11, Go 1.27.1, measured 2026-10-05. The laptop's run-to-run
-noise is large (up to ±50%). Setup and details: [BENCHMARKS.md](BENCHMARKS.md).
+Intel Core Ultra 7 155H, Windows 11, Go 1.27.1, measured 2026-10-19 (the other scenarios above:
+2026-10-05). The laptop's run-to-run noise is large (up to ±50%). Setup and details:
+[BENCHMARKS.md](BENCHMARKS.md); the comparison module: [benchmarks/go](https://github.com/OAzizjon/justlog3/tree/main/benchmarks/go).
 
 ## License
 
